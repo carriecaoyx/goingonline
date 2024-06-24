@@ -1,0 +1,12 @@
+.consent-form {
+    width: 707px;
+}
+
+.consent-form p, .consent-form li {
+    text-align: left;
+    font-size: 12px;
+    line-height: 1.2em;
+    margin: 5px 0;
+}
+
+
