@@ -3,6 +3,10 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://unpkg.com/jspsych@7.3.4"></script>
+  <!-- jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- Proliferate -->
+<script src="https://proliferate.alps.science/static/js/proliferate.js" type="text/javascript"></script>
   <script src="plugin/plugin-html-multi-slider-response.js"></script>
   <script src="plugin/plugin-html-button-response.js"></script>
   <script src="plugin/plugin-html-keyboard-response.js"></script>
@@ -73,7 +77,7 @@
     return {
       type: jsPsychHtmlMultiSliderResponse,
       stimulus: '<p><img src="' + image + '" class="scaled-img" /></p>' +
-                '<p>How likely do you think it is that someone would use these sentences? <br> Make sure that your responses sum up to 100.</p>',
+                '<p>How likely do you think it is that someone would use these sentences? <br> Make sure that your responses sum up to one hundred percent.</p>',
       num_sliders: 4,
       force_total: 100,
       slider_labels: ["I'll be here for a bit", "I'll be here for some time", "I'll be here for a while", "something else"],
@@ -143,23 +147,39 @@
   // Define fullscreen entry page
   const fullscreenEntry = {
     type: jsPsychFullscreen,
-    message: '<p style="font-size: 30px; text-align: center;">The experiment will be conducted in fullscreen mode. <br>When you are ready to begin, please press the button below.</p>',
+    message: '<p style="font-size: 25px; text-align: center;">The experiment will be conducted in fullscreen mode. <br> Please press the button below When you are ready to begin.</p>',
     button_label: 'Continue',
     fullscreen_mode: true
   };
 
   const instructPage = {
     type: jsPsychHtmlKeyboardResponse,
-    stimulus: '<p style="font-size: 30px; text-align: center;">In this experiment, you will see several scenes and answer questions about them. <br>On each slide, you will see a picture and several utterances. <br>Please move the sliders for each utterance to indicate <br>how likely you think it is that the speaker would say this. <br>Note: The ratings must add up to 100. <br>The sliders will automatically snap back if you try to assign more than 100 points. <br>Press the space bar to begin.</p>',
+    stimulus: '<p style="font-size: 25px; text-align: center;">In this experiment, you will see several scenes and answer questions about them. <br>On each slide, you will see a picture and several utterances. <br>Please move the sliders for each utterance to indicate <br>how likely you think it is that the speaker would say this. <br><br>Note: The ratings must add up to 100. <br>The sliders will automatically snap back if you try to assign more than 100 points. <br>Press the space bar to begin.</p>',
   };
 
   // Define context page
   const contextPage = {
-    type: jsPsychHtmlKeyboardResponse,
-    stimulus: '<p style="font-size: 30px; text-align: center;">A person is at an airport, in the line for check-in. A friend called: “Can you talk?”</p>',
-    choices: "NO_KEYS",
-    trial_duration: 3000  // Display for 2000 milliseconds (2 seconds)
-  };
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+        <p style="font-size: 25px; text-align: center;">
+            In the experiment, you will be presented with scenes similar to the one described below.<br><br>
+            A person is at an airport, standing in the check-in line. Suddenly, a friend calls and asks, “Can you talk?”<br>
+            Before responding, the person checks the estimated queueing time displayed on a sign to their right.
+        </p>
+        <div style="text-align: center;">
+            <img src= "../proexpec/q/q_b_20.jpg" alt="Example scene" style="max-width: 500px;">
+        </div>`,
+    choices: ['Continue'],
+    button_html: `
+        <button class="jspsych-btn" style="transform: none; position: relative; left: auto; bottom: auto;">
+            %choice%
+        </button>`,
+    prompt: `
+        <p style="font-size: 20px; text-align: center;">
+            If you understand the example scene, please click the button to begin the first task.
+        </p>`
+};
+
 
   // Define feedback text box
   const feedbackTrial = {
