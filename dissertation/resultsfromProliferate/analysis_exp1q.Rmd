@@ -1,0 +1,80 @@
+---
+title: "Experiment analysis"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+```{r load_libraries}
+
+library(tidyverse)
+library(ggplot2)
+theme_set(theme_bw())
+
+
+
+```
+
+#### Load data
+
+```{r load_data}
+
+data = read.csv("production_expectation_experiment_trials_q-processed.csv")
+
+```
+
+#### Add scale type information to each row (we extract this from the first slider label)
+
+```{r add_scale_value}
+
+data = data %>%
+  mutate(scale = case_when(
+    slider_0 == "I'll be here for a bit" ~ "for a bit, for some time, for a while"
+  ))
+
+```
+
+
+#### Turn data into long format, so that each rating is in one line
+
+```{r long_data}
+
+data_long = data %>% 
+  dplyr::select(workerid, response_0, response_1, response_2, 
+         response_3, rt, slider_0, slider_1, slider_2, 
+         slider_3, time_value, scale) %>% # Let's select only the fields we actually need
+  tidyr::pivot_longer(cols=matches("response_|slider_"), 
+                            names_to=c(".value", "slider"), 
+                            names_pattern="(response_|slider_)(.)", 
+                            values_drop_na=TRUE) %>%
+  dplyr::rename(response = response_,
+                utterance = slider_)
+
+```
+
+
+### Plot the data
+
+```{r plot, fig.width=10, fig.height=4}
+
+data_long %>% 
+  filter(!(workerid %in% c(23,27,33))) %>%
+  dplyr::group_by(time_value, slider, scale) %>%
+  dplyr::summarize(response = mean(response)) %>%
+  ggplot(aes(x=time_value, y=response, col=slider)) + geom_line() + facet_wrap(~scale, ncol = 1) 
+  theme(legend.position = "bottom")
+
+```
+```{r plot2, fig.width=10, fig.height=10}
+
+data_long %>% 
+  dplyr::group_by(workerid, time_value, slider, scale) %>%
+  dplyr::summarize(response = mean(response)) %>%
+  ggplot(aes(x=time_value, y=response, col=slider)) + geom_line() + facet_wrap(~workerid, ncol = 5) +
+  theme(legend.position = "bottom")
+
+```
+
+
+
