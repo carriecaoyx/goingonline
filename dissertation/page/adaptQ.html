@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://unpkg.com/jspsych@7.3.4"></script>
+  <!-- jQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- Proliferate -->
+<script src="https://proliferate.alps.science/static/js/proliferate.js" type="text/javascript"></script>
+  <script src="plugin/plugin-html-multi-slider-response.js"></script>
+  <script src="plugin/plugin-html-button-response.js"></script>
+  <script src="plugin/plugin-html-keyboard-response.js"></script>
+  <script src="plugin/plugin-survey-text.js"></script>
+  <script src="plugin/plugin-fullscreen.js"></script>
+  <link href="https://unpkg.com/jspsych@7.3.4/css/jspsych.css" rel="stylesheet" type="text/css" />
+  <style>
+    .scaled-img {
+      width: 450px;
+    }
+    .consent-form {
+      width: 707px;
+    }
+    .consent-form p, .consent-form li {
+      text-align: left;
+      font-size: 12px;
+      line-height: 1.2em;
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+<script>
+  var n_trials = 18;
+
+  console.log("Initializing jsPsych...");
+
+  var jsPsych = initJsPsych({
+    default_iti: 250,
+    on_finish: function(data) {
+      var vals = data.values();
+      // check if the participant went through the experiment
+      // or exited it during the consent forms
+      if (vals.length > n_trials) {
+        // Transmit data to Proliferate
+        proliferate.submit({"trials": vals});
+      }
+    }
+  });
+
+  // Array of image paths
+  var images = [
+    "../proexpec/q/q_b_5.jpg",
+    "../proexpec/q/q_b_10.jpg",
+    "../proexpec/q/q_b_15.jpg",
+    "../proexpec/q/q_b_20.jpg",
+    "../proexpec/q/q_b_30.jpg",
+    "../proexpec/q/q_b_45.jpg",
+    "../proexpec/q/q_b_60.jpg",
+    "../proexpec/q/q_b_90.jpg",
+    "../proexpec/q/q_b_120.jpg"
+  ];
+
+  // Function to shuffle an array
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  // Shuffle and duplicate the array
+  var randomizedImages = shuffle(images.concat(images));
+
+  // Create trials
+  var trials = randomizedImages.map(function(image) {
+    return {
+      type: jsPsychHtmlMultiSliderResponse,
+      stimulus: '<p><img src="' + image + '" class="scaled-img" /></p>' +
+                '<p>How likely do you think *Lucas would use these sentences? <br> Make sure that your responses sum up to one hundred percent.</p>',
+      num_sliders: 3,
+      force_total: 100,
+      slider_labels: ["I'll be here for a bit", "I'll be here for a while", "something else"],
+      slider_width: 800,
+      prompt: '',
+      button_label: 'Continue',
+      require_movement: false
+    };
+  });
+
+  // Define consent form
+  const consentForm = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: '<div class="consent-form"><p><img src="./consent_header.png"></p>' +
+    '<p style="text-align:center;font-weight:bold;">ONLINE INFORMATION SHEET</p>' +
+    '<p><strong>Title of Project</strong>: The cognitive basis of pragmatic inferences</p>' +
+    '<p>This study has been approved by the RD Ethics Chair as LING-2021-01-21</p><p>&nbsp;</p>' +
+    '<p><strong>Name, Address and Contact Details of Principal Investigator:</strong></p>' +
+    '<p>' +
+    'Richard Breheny (<a href="mailto:r.breheny@ucl.ac.uk">r.breheny@ucl.ac.uk</a>)<br>UCL Linguistics<br>Division of Psychology and Language Sciences<br>Chandler House<br>2 Wakefield Street<br>London WC1N 1PF</p><p>&nbsp;</p>' +
+    '<p><strong>Other investigators:</strong></p>' +
+    '<p>Sebastian Schuster, Yuxin Cao</p>' +
+    '<p>&nbsp;</p>' +
+    '<p>We would like to invite you to participate in this research project. You should only participate if you want to. Choosing not to take part will not disadvantage you in any way. Before you decide whether you want to take part, please read the following information carefully. Please contact us if there is anything that is not clear or if you would like more information (<a href="mailto:s.schuster@ucl.ac.uk">s.schuster@ucl.ac.uk</a>).</p>' +
+    '<p>&nbsp;</p>' +
+    '<p><strong>Details of Study</strong></p>' +
+    "<p>This study forms part of a research project under the supervision of Professor Richard Breheny in the Linguistics Department of the UCL Division of Psychology and Language Sciences which looks at how people process language. The study addresses the question of how people read more into communication than the actual words say. We will record participants' responses and responses may be timed.</p>" +
+    '<p>&nbsp;</p>' +
+    '<p><strong>Possible risks and benefits</strong></p>' +
+    '<p>The testing session will take approximately <strong>10 minutes</strong> (including breaks). You are free to withdraw from the experiment at any time.  Once you have completed the experiment, you will be redirected to the recruitment platform you used to access our study, and you will be compensated for your time.</p>' +
+    '<p>It is up to you to decide whether or not to take part. If you do decide to take part, you will be asked to provide an informed consent. Even after agreeing to take part, you can still withdraw at any time and without giving a reason.</p>' +
+    '<p>All data are collected and stored in accordance with the provisions of the General Data Protection Regulations and the Data Protection Act 2018.</p><p>&nbsp;</p></div>',
+    choices: ['Leave the study', 'Continue'],
+    button_html: '<button class="jspsych-btn" style="transform: none; position: relative;  left:auto; bottom: auto;">%choice%</button>',
+    on_finish: function(data) {
+      if (data.response == "0") {
+        jsPsych.endExperiment('Please return this study and close this window! Thank you for your interest.');
+      }
+    }
+  };
+
+  // Define second consent confirmation
+  const consentConfirmation = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: '<div class="consent-form"><p><img src="consent_header.png"></p>' +
+    '<p style="text-align:center;font-weight:bold;">ONLINE CONSENT FORM</p>' +
+    '<p><strong>Title of Project</strong>: The cognitive basis of pragmatic inferences</p>' +
+    '<p>This study forms part of a research project under the supervision of Professor Richard Breheny in the Linguistics Department of the UCL Division of Psychology and Language Sciences. This study has been approved by the RD Ethics Chair as LING-2021-01-21</p>' +
+    '<p>Please read the following information carefully:</p>' +
+    '<ul>' +
+    '<li>You have read and understood the information sheet explaining the project, risks and benefits.</li>' +
+    '<li>You understand that you have the right to withdraw at any point during the study, for any reason, and without any prejudice.</li>' +
+    '<li>You understand that you must not participate if you suffer from photosensitive epilepsy.</li>' +
+    '<li>You consent to the processing of the anonymised data collected for the purposes of this study only and not for any other purposes.</li>' +
+    '<li>All data are collected and stored in accordance with the provisions of the General Data Protection Regulations and the Data Protection Act 2018. If you are concerned about how the data is being processed, please contact UCL in the first instance at data-protection@ucl.ac.uk</li>' +
+    '</ul>' +
+    '<p>If you would like to contact the Principal Investigator in the study to discuss this research, please e-mail <a href="mailto:r.breheny@ucl.ac.uk">r.breheny@ucl.ac.uk</a>.</p><p>&nbsp;</p></div>',
+    choices: ['I do NOT consent (leave)', 'I consent (continue)'],
+    button_html: '<button class="jspsych-btn" style="transform: none; position: relative;  left:auto; bottom: auto;">%choice%</button>',
+    on_finish: function(data) {
+      if (data.response == "0") {
+        jsPsych.endExperiment('Please return this study and close this window! Thank you for your interest.');
+      }
+    }
+  };
+
+  // Define fullscreen entry page
+  const fullscreenEntry = {
+    type: jsPsychFullscreen,
+    message: '<p style="font-size: 25px; text-align: center;">The experiment will be conducted in fullscreen mode. <br> Please press the button below when you are ready to begin.</p>',
+    button_label: 'Continue',
+    fullscreen_mode: true
+  };
+
+  const instructPage = {
+    type: jsPsychHtmlKeyboardResponse,
+    stimulus: '<p style="font-size: 25px; text-align: center;">In this experiment, you will see several scenes and answer 18 questions about them. <br>On each slide, you will see a picture and several utterances. <br>Please move the sliders for each utterance to indicate <br>how likely you think it is that the speaker would say this. <br><br>Note: The ratings must add up to 100. <br>The sliders will automatically snap back if you try to assign more than 100 points. <br><br>Press the space bar to begin.</p>',
+  };
+
+  // Define context page
+  const contextPage = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+        <p style="font-size: 25px; text-align: center;">
+            During the experiment, you will be presented with scenes similar to the one described below.<br><br>
+            A person is at an airport, standing in the check-in line. Suddenly, a friend calls and asks, “Can you talk?”<br>
+            Before responding, the person checks the estimated queueing time displayed on a sign to their right.
+        </p>
+        <div style="text-align: center;">
+            <img src= "../proexpec/q/q_b_20.jpg" alt="Example scene" style="max-width: 500px;">
+        </div>`,
+    choices: ['Continue'],
+    button_html: `
+        <button class="jspsych-btn" style="transform: none; position: relative; left: auto; bottom: auto;">
+            %choice%
+        </button>`,
+    prompt: `
+        <p style="font-size: 20px; text-align: center;">
+            If you understand the example scene, please click the button to begin the task.
+        </p>`
+};
+
+
+  const EXPOPage1 = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+        <p style="font-size: 25px; text-align: center;">
+          <b>Consider the following scene.</b> <br>
+          Lucas is at the airport. There are many people queueing for the check-in.
+        </p>
+        <div style="text-align: center;">
+            <img src= "../page/1.png" alt="Example scene" style="max-width: 500px;">
+        </div>`,
+    choices: ['Continue(1/4)'],
+    button_html: `
+        <button class="jspsych-btn" style="transform: none; position: relative; left: auto; bottom: auto;">
+            %choice%
+        </button>`
+};
+
+
+const EXPOPage2 = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+        <p style="font-size: 25px; text-align: center;">
+            Lucas goes over to the end of the line and checks the estimated queueing time. <br>
+            The sign shows 30 mintues. Suddenly, his phone rings.
+        </p>
+        <div style="text-align: center;">
+            <img src= "../page/3.png" alt="Example scene" style="max-width: 500px;">
+        </div>`,
+    choices: ['Continue(2/4)'],
+    button_html: `
+        <button class="jspsych-btn" style="transform: none; position: relative; left: auto; bottom: auto;">
+            %choice%
+        </button>`
+};
+
+const EXPOPage3 = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+        <p style="font-size: 25px; text-align: center;">
+            His friend asks, “Can you talk?”<br>
+            Lucas answered, "I'm in the queue for check-in, but it looks like I'm gonna be here for a while."
+        </p>
+        <div style="text-align: center;">
+            <img src= "../page/4.png" alt="Example scene" style="max-width: 500px;">
+        </div>`,
+    choices: ['Continue(3/4)'],
+    button_html: `
+        <button class="jspsych-btn" style="transform: none; position: relative; left: auto; bottom: auto;">
+            %choice%
+        </button>`
+};
+
+const EXPOPage4 = {
+  type: jsPsychHtmlButtonResponse,
+    stimulus: `
+        <p style="font-size: 25px; text-align: center;">
+            From now on, please consider how likely the person on the screen would say something <br>
+            and distribute 100 points to the utterances.
+        </p>`,
+    choices: ['Continue(4/4)'],
+    button_html: `
+        <button class="jspsych-btn" style="transform: none; position: relative; left: auto; bottom: auto;">
+            %choice%
+        </button>`
+};
+
+
+
+
+  // Define feedback text box
+  const feedbackTrial = {
+    type: jsPsychSurveyText,
+    questions: [
+      {
+        prompt: 'If you encountered any technical difficulties, found anything odd, <br>or if you have any other comments about the experiment that you would like to share with us, please type them in the box below:',
+        rows: 15,
+        columns: 100
+      }
+    ],
+    button_label: 'Submit',
+    on_finish: function(data) {
+      document.body.innerHTML = '<p style="font-size: 24px; text-align: center;">Thank you for participating!</p>';
+    }
+  };
+
+  console.log("Trials defined.");
+
+  var timeline = [];
+  timeline.push(consentForm);
+  timeline.push(consentConfirmation);
+  timeline.push(fullscreenEntry);
+
+  timeline.push(instructPage);
+
+
+  timeline.push(contextPage);
+
+
+
+  timeline.push(EXPOPage1);
+  timeline.push(EXPOPage2);
+  timeline.push(EXPOPage3);
+  timeline.push(EXPOPage4);
+
+
+  timeline = timeline.concat(trials);
+  timeline.push(feedbackTrial);
+
+  // Run the experiment
+  jsPsych.run(timeline);
+
+  console.log("Experiment started.");
+</script>
+</body>
+</html>
