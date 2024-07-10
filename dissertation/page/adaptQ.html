@@ -185,7 +185,7 @@
     type: jsPsychHtmlButtonResponse,
     stimulus: `
         <p style="font-size: 25px; text-align: center;">
-          <b>Consider the following scene.</b> <br>
+          <b>Consider the following XX scenes.</b> <br>
           Lucas is at the airport. There are many people queueing for the check-in.
         </p>
         <div style="text-align: center;">
@@ -247,7 +247,22 @@ const EXPOPage4 = {
         </button>`
 };
 
-
+const ExpoPage = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `
+        <p style="font-size: 25px; text-align: center;">
+            XX is at an airport, standing in the check-in line. Suddenly, a friend calls and asks, “Can you talk?”<br>
+            Before responding, XX checks the estimated queueing time displayed on a sign to their right.
+        </p>
+        <div style="text-align: center;">
+            <img src= "../proexpec/q/f_bit_30.jpg" alt="Example scene" style="max-width: 500px;">
+        </div>`,
+    choices: ['Continue'],
+    button_html: `
+        <button class="jspsych-btn" style="transform: none; position: relative; left: auto; bottom: auto;">
+            %choice%
+        </button>`
+};
 
 
   // Define feedback text box
@@ -284,7 +299,7 @@ const EXPOPage4 = {
   timeline.push(EXPOPage2);
   timeline.push(EXPOPage3);
   timeline.push(EXPOPage4);
-
+  timeline.push(ExpoPage);
 
   timeline = timeline.concat(trials);
   timeline.push(feedbackTrial);
