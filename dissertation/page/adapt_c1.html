@@ -247,23 +247,6 @@ const EXPOPages = shuffledImages.map(images2 => ({
 }));
 
 
-  const EXPOPage = {
-    type: jsPsychHtmlButtonResponse,
-    stimulus: `
-        <p style="font-size: 25px; text-align: center;">
-           <b>Consider the following scene.</b><br>
-           Please watch the estimated queuing time and the utterances the man produce.
-        </p>
-        <div style="text-align: center;">
-            <img src= "../proexpec/q/q_bit_30.jpg" alt="Example scene" style="max-width: 500px;">
-        </div>`,
-    choices: ['Continue'],
-    button_html: `
-        <button class="jspsych-btn" style="transform: none; position: relative; left: auto; bottom: auto;">
-            %choice%
-        </button>`
-};
-
 const TransPage = {
   type: jsPsychHtmlButtonResponse,
     stimulus: `
@@ -306,12 +289,9 @@ const TransPage = {
 
   timeline.push(instructPage);
 
-
   timeline.push(contextPage1);
   timeline.push(contextPage2);
   timeline.push(contextPage3);
-
-  timeline.push(EXPOPage);
 
   timeline = timeline.concat(EXPOPages);
 
