@@ -77,7 +77,7 @@
     return {
       type: jsPsychHtmlMultiSliderResponse,
       stimulus: '<p><img src="' + image + '" class="scaled-img" /></p>' +
-                '<p>How likely do you think the man would use these sentences? <br> Make sure that your responses sum up to one hundred percent.</p>',
+                '<p>How likely do you think it is that the man will respond with each of the following sentences? Make sure that your responses sum up to 100.</p>',
       num_sliders: 3,
       force_total: 100,
       slider_labels: ["I'll be here for a bit", "I'll be here for a while", "something else"],
@@ -163,7 +163,7 @@
     type: jsPsychHtmlButtonResponse,
     stimulus: `
         <p style="font-size: 25px; text-align: center;">
-           The scenes presented for the experiment will be similar to the one described below.<br><br>
+           The scenes presented for the experiment will be similar to the one shown below.<br><br>
           A man is at the airport, heading to the check-in area.
         </p>
         <div style="text-align: center;">
@@ -181,8 +181,8 @@ const contextPage2 = {
     type: jsPsychHtmlButtonResponse,
     stimulus: `
         <p style="font-size: 25px; text-align: center;">
-            He goes over to the check-in counter and checks the estimated queueing time. <br>
-            There is a sign showing the time. And suddenly, his phone rings.
+            He heads over to the check-in counter and checks the estimated queueing time. <br>
+            There is a sign showing the time. Suddenly, his phone rings.
         </p>
         <div style="text-align: center;">
             <img src= "../page/3.png" alt="Example scene" style="max-width: 500px;">
@@ -234,7 +234,7 @@ const EXPOPages = shuffledImages.map(images2 => ({
     type: jsPsychHtmlButtonResponse,
     stimulus: `
         <p style="font-size: 25px; text-align: center;">
-            Consider the following scenes.
+            Consider the following scene.
         </p>
         <div style="text-align: center;">
             <img src="${images2}" alt="Example scene" style="max-width: 500px;">
@@ -270,8 +270,8 @@ const TransPage = {
   type: jsPsychHtmlButtonResponse,
     stimulus: `
         <p style="font-size: 25px; text-align: center;">
-            From now on, please consider how likely the man would say something under certain situation <br>
-            and distribute 100 points by moving the sliders for each utterance.
+           On the following pages, you will again see similar scenes. Please consider the situation and use the sliders to indicate the man's likely responses.<br>
+            Please do so by distributing 100 points across the given responses. 
             <br><br>Note: The sliders will automatically snap back if you try to assign more than 100 points.
         </p>`,
     choices: ['Continue'],
