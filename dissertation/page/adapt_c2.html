@@ -5,6 +5,7 @@
   <script src="https://unpkg.com/jspsych@7.3.4"></script>
   <!-- jQuery -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://unpkg.com/@jspsych/plugin-survey-multi-choice@2.0.0"></script>
 <!-- Proliferate -->
 <script src="https://proliferate.alps.science/static/js/proliferate.js" type="text/javascript"></script>
   <script src="plugin/plugin-html-multi-slider-response.js"></script>
@@ -12,6 +13,7 @@
   <script src="plugin/plugin-html-keyboard-response.js"></script>
   <script src="plugin/plugin-survey-text.js"></script>
   <script src="plugin/plugin-fullscreen.js"></script>
+  <script src="jspsych/plugin-survey-multi-choice.js"></script>
   <link href="https://unpkg.com/jspsych@7.3.4/css/jspsych.css" rel="stylesheet" type="text/css" />
   <style>
     .scaled-img {
@@ -144,10 +146,41 @@
     }
   };
 
-   // Define fullscreen entry page
-   const fullscreenEntry = {
+  const TestPage = {
+    type: jsPsychSurveyMultiChoice,
+    questions: [
+        {
+            prompt: `
+                <p style="font-size: 20px; text-align: center;"> Please select the phrase that the man said.</p>
+                <div style="text-align: center;">
+                    <img src="../page/4.png" alt="Example scene" style="max-width: 350px;">
+                    <audio id="test-audio" autoplay>
+                        <source src="../proexpec/q/awhile.wav" type="audio/wav">
+                        Your browser does not support the audio element.
+                    </audio>
+                    <button id="replay-button" type="button" style="display: block; margin: 20px auto;">Replay Audio</button>
+                </div>`,
+            options: ["I'll be here for a while", "I'll be here for a bit", "I'll be here for some time", "Something else"],
+            required: false,
+            horizontal: false
+        }
+    ],
+    on_load: function() {
+        const replayButton = document.getElementById('replay-button');
+        const audioElement = document.getElementById('test-audio');
+        
+        replayButton.addEventListener('click', () => {
+            audioElement.currentTime = 0; // rewind to start
+            audioElement.play(); // play the audio
+        });
+    }
+};
+
+
+  // Define fullscreen entry page
+  const fullscreenEntry = {
     type: jsPsychFullscreen,
-    message: '<p style="font-size: 25px; text-align: center;">The experiment will be conducted in fullscreen mode. Please ensure your sound is on for this experiment. <br> Press the button below when you are ready to begin.<br><br></p>',
+    message: '<p style="font-size: 25px; text-align: center;">The experiment will be conducted in fullscreen mode.<br> Please press the button below when you are ready to begin.<br><br></p>',
     button_label: 'Continue',
     fullscreen_mode: true
   };
@@ -200,9 +233,9 @@ const contextPage3 = {
         <p style="font-size: 25px; text-align: center;">
             His friend asks, “Can you talk?” And he answers. </p>
         <div style="text-align: center;">
-            <img src= "../page/5.png" alt="Example scene" style="max-width: 500px;">
+            <img src= "../page/4.png" alt="Example scene" style="max-width: 500px;">
             <audio autoplay>
-                <source src="../proexpec/q/abitfull.wav" type="audio/wav">
+                <source src="../proexpec/q/awhile.wav" type="audio/wav">
                 Your browser does not support the audio element.
             </audio>
         </div>`,
@@ -212,7 +245,6 @@ const contextPage3 = {
             %choice%
         </button>`
 };
-
 
 // Function to shuffle an array
 function shuffleArray(array) {
@@ -231,9 +263,9 @@ const images2 = [
 ];
 
 const audioMapping = {
-    "../proexpec/q/q_bit_15.jpg": "../proexpec/q/abitfull.wav",
-    "../proexpec/q/q_while_30.jpg": "../proexpec/q/awhilefull.wav",
-    "../proexpec/q/q_0.jpg": "../proexpec/q/CANNOT.wav"
+    "../proexpec/q/q_bit_15.jpg": "../proexpec/q/abit.wav",
+    "../proexpec/q/q_while_30.jpg": "../proexpec/q/awhile.wav",
+    "../proexpec/q/q_0.jpg": "../proexpec/q/later.wav"
 };
 
 // Shuffle the images array
@@ -250,26 +282,31 @@ const EXPOPages = shuffledImages.map(image => {
             </p>
             <div style="text-align: center;">
                 <img src="${image}" alt="Example scene" style="max-width: 500px;">
-                <audio autoplay>
+                <audio id="audio-element" autoplay>
                     <source src="${audioFile}" type="audio/wav">
                     Your browser does not support the audio element.
                 </audio>
             </div>`,
         choices: ['Continue'],
         button_html: `
-            <button class="jspsych-btn" style="transform: none; position: relative; left: auto; bottom: auto;">
+            <button id="continue-button" class="jspsych-btn" style="transform: none; position: relative; left: auto; bottom: auto;" disabled>
                 %choice%
-            </button>`
+            </button>`,
+        on_load: function() {
+            const audioElement = document.getElementById('audio-element');
+            const continueButton = document.getElementById('continue-button');
+            audioElement.addEventListener('ended', () => {
+                continueButton.disabled = false;
+            });
+        }
     };
 });
-
-
 
 const TransPage = {
   type: jsPsychHtmlButtonResponse,
     stimulus: `
         <p style="font-size: 25px; text-align: center;">
-           On the following pages, you will again see similar scenes.<br> Please consider the situation and use the sliders to indicate the man's likely responses.<br>
+            On the following pages, you will again see similar scenes.<br> Please consider the situation and use the sliders to indicate the man's likely responses.<br>
             Please do so by distributing 100 points across the given responses. 
             <br><br>Note: The sliders will automatically snap back if you try to assign more than 100 points.
         </p>`,
@@ -303,6 +340,8 @@ const TransPage = {
   var timeline = [];
   timeline.push(consentForm);
   timeline.push(consentConfirmation);
+
+  timeline.push(TestPage);
   timeline.push(fullscreenEntry);
 
   timeline.push(instructPage);
