@@ -79,7 +79,7 @@
     return {
       type: jsPsychHtmlMultiSliderResponse,
       stimulus: '<p><img src="' + image + '" class="scaled-img" /></p>' +
-                '<p>How likely do you think it is that the man will respond with each of the following sentences? Make sure that your responses sum up to 100.</p>',
+                '<p style="font-size: 22px">How likely do you think it is that the man will respond with each of the following sentences? <br>Make sure that your responses sum up to 100.</p>',
       num_sliders: 3,
       force_total: 100,
       slider_labels: ["I'll be here for a bit", "I'll be here for a while", "something else"],
@@ -146,25 +146,19 @@
     }
   };
 
-  const TestPage = {
-    type: jsPsychSurveyMultiChoice,
-    questions: [
-        {
-            prompt: `
-                <p style="font-size: 20px; text-align: center;"> Please select the phrase that the man said.</p>
+const TestPage = {
+    type: jsPsychHtmlButtonResponse,
+    stimulus: `<p style="font-size: 25px; text-align: center;">Please select the phrase that the man said.</p>
                 <div style="text-align: center;">
-                    <img src="../page/5.png" alt="Example scene" style="max-width: 350px;">
+                    <img src="../page/test.png" alt="Example scene" style="max-width: 350px;">
                     <audio id="test-audio" autoplay>
-                        <source src="../proexpec/q/abit.wav" type="audio/wav">
+                        <source src="../proexpec/q/abitfull.wav" type="audio/wav">
                         Your browser does not support the audio element.
                     </audio>
                     <button id="replay-button" type="button" style="display: block; margin: 20px auto;">Replay Audio</button>
                 </div>`,
-            options: ["I'll be here for a while", "I'll be here for a bit", "I'll be here for some time", "Something else"],
-            required: false,
-            horizontal: false
-        }
-    ],
+    choices: ["I'll be here for a while", "I'll be here for a bit", "I'll be here for some time", "Something else"],
+    button_html: '<button class="jspsych-btn" style="transform: none; position: relative;  left:auto; bottom: auto;">%choice%</button>',
     on_load: function() {
         const replayButton = document.getElementById('replay-button');
         const audioElement = document.getElementById('test-audio');
@@ -173,9 +167,17 @@
             audioElement.currentTime = 0; // rewind to start
             audioElement.play(); // play the audio
         });
-    }
-};
+    },
+    on_finish: function(data) {
+        if (data.response == 1) {
+            timeline.push(contextPage1);
+        } 
+        else {
+            jsPsych.endExperiment('This response does not match what the man has said. Please check again that your audio is on.<br> Unfortunately, you cannot participate in the experiment without sound. Please return to the study page so that your approval rating will not be affected. <br><br> Thank you for your understandings! We apologize for any inconvenience this may have caused. ');
+        }
 
+    }
+  };
 
   // Define fullscreen entry page
   const fullscreenEntry = {
@@ -187,7 +189,8 @@
 
   const instructPage = {
     type: jsPsychHtmlKeyboardResponse,
-    stimulus: '<p style="font-size: 25px; text-align: center;">In this experiment, you will see several scenes and answer 18 questions about them. <br>On each slide, you will see a picture and several utterances. <br>Please move the sliders for each utterance to indicate <br>how likely you think it is that the speaker would say this. <br><br>Note: The ratings must add up to 100.  <br><br>Press the space bar to begin.</p>',
+    stimulus: '<p style="font-size: 25px; text-align: center;">On the following slides, you will see a scene and how the speaker responds. <br> Please look at the pictures and listen to what the man says. <br><br>Press the space bar to begin.</p>',
+    choices: " "
   };
 
 
@@ -306,9 +309,7 @@ const TransPage = {
   type: jsPsychHtmlButtonResponse,
     stimulus: `
         <p style="font-size: 25px; text-align: center;">
-            On the following pages, you will again see similar scenes.<br> Please consider the situation and use the sliders to indicate the man's likely responses.<br>
-            Please do so by distributing 100 points across the given responses. 
-            <br><br>Note: The sliders will automatically snap back if you try to assign more than 100 points.
+            On the following pages, you will again see similar scenes and answer 18 questions about them.<br><br> Please move the sliders for each utterance to indicate <br>how likely you think it is that the speaker would say this. <br><br>Note: The ratings must add up to 100. The sliders will automatically snap back if you try to assign more than 100 points.
         </p>`,
     choices: ['Continue'],
     button_html: `
