@@ -82,7 +82,7 @@
                 '<p style="font-size: 22px">How likely do you think it is that the man will respond with each of the following sentences? <br>Make sure that your responses sum up to 100.</p>',
       num_sliders: 3,
       force_total: 100,
-      slider_labels: ["I'll be here for a bit", "I'll be here for a while", "something else"],
+      slider_labels: ["I'll be here for a bit", "I'll be here for a while", "<em>something else</em>"],
       slider_width: 800,
       prompt: '',
       button_label: 'Continue',
@@ -157,7 +157,7 @@
                     </audio>
                     <button id="replay-button" type="button" style="display: block; margin: 20px auto;">Replay Audio</button>
                 </div>`,
-    choices: ["I'll be here for a while", "I'll be here for a bit", "I'll be here for some time", "Something else"],
+    choices: ["I'll be here for a while", "I'll be here for a bit", "I'll be here for some time", "<em>Something else</em>"],
     button_html: '<button class="jspsych-btn" style="transform: none; position: relative;  left:auto; bottom: auto;">%choice%</button>',
     on_load: function() {
         const replayButton = document.getElementById('replay-button');
@@ -310,7 +310,7 @@ const TransPage = {
   type: jsPsychHtmlButtonResponse,
     stimulus: `
         <p style="font-size: 25px; text-align: center;">
-            On the following pages, you will again see similar scenes and answer 18 questions about them.<br><br> Please move the sliders for each utterance to indicate <br>how likely you think it is that the speaker would say this. <br><br>Note: The ratings must add up to 100. The sliders will automatically snap back if you try to assign more than 100 points.
+          On the following pages, you will again see similar scenes and answer 18 questions about them.<br><br> Please move the sliders for each utterance to indicate how likely you think it is that the speaker would say this. <br> If you think that both utterances are unlikely,<br> you can indicate this by giving the third option, something else, a high rating.<br><br>Note: The ratings must add up to 100. The sliders will automatically snap back if you try to assign more than 100 points.
         </p>`,
     choices: ['Continue'],
     button_html: `
